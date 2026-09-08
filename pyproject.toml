@@ -1,0 +1,13 @@
+[project]
+name = "reconciliation-engine"
+version = "0.1.0"
+description = "Framework-independent transaction reconciliation engine (PRD)"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["engine", "backend"]
+testpaths = ["backend/tests"]
+
+[tool.setuptools]
+package-dir = {"" = "engine"}
+packages = ["transaction_reconciliation_engine"]

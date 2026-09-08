@@ -8,6 +8,10 @@ from dataclasses import dataclass, field
 from datetime import timedelta
 from decimal import Decimal
 
+# Re-exported for the matching engine; canonical definition is in
+# normalization.py to keep the pure data model free of rule coupling.
+from .normalization import is_cancelled  # noqa: F401  (used via rules_mod)
+
 # Default tolerances (PRD section 11).
 MATCH_TIME_TOLERANCE = timedelta(minutes=5)
 AMOUNT_TOLERANCE = Decimal("0.01")

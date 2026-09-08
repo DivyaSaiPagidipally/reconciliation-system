@@ -69,19 +69,19 @@ class MatchingResult:
 
     @property
     def matched_count(self) -> int:
-        return self._counts()[ReconciliationStatus.MATCHED]
+        return self._counts().get(ReconciliationStatus.MATCHED, 0)
 
     @property
     def discrepancy_count(self) -> int:
-        return self._counts()[ReconciliationStatus.DISCREPANCY]
+        return self._counts().get(ReconciliationStatus.DISCREPANCY, 0)
 
     @property
     def unmatched_internal_count(self) -> int:
-        return self._counts()[ReconciliationStatus.UNMATCHED_INTERNAL]
+        return self._counts().get(ReconciliationStatus.UNMATCHED_INTERNAL, 0)
 
     @property
     def unmatched_external_count(self) -> int:
-        return self._counts()[ReconciliationStatus.UNMATCHED_EXTERNAL]
+        return self._counts().get(ReconciliationStatus.UNMATCHED_EXTERNAL, 0)
 
     @property
     def cancelled_count(self) -> int:
@@ -92,13 +92,13 @@ class MatchingResult:
         return {
             "internal_count": self.internal_count,
             "external_count": self.external_count,
-            "matched": counts[ReconciliationStatus.MATCHED],
-            "discrepancies": counts[ReconciliationStatus.DISCREPANCY],
-            "unmatched_internal": counts[ReconciliationStatus.UNMATCHED_INTERNAL],
-            "unmatched_external": counts[ReconciliationStatus.UNMATCHED_EXTERNAL],
+            "matched": counts.get(ReconciliationStatus.MATCHED, 0),
+            "discrepancies": counts.get(ReconciliationStatus.DISCREPANCY, 0),
+            "unmatched_internal": counts.get(ReconciliationStatus.UNMATCHED_INTERNAL, 0),
+            "unmatched_external": counts.get(ReconciliationStatus.UNMATCHED_EXTERNAL, 0),
             "cancelled": self.cancelled_count,
-            "manually_matched": counts[ReconciliationStatus.MANUALLY_MATCHED],
-            "accepted_unmatched": counts[ReconciliationStatus.ACCEPTED_UNMATCHED],
+            "manually_matched": counts.get(ReconciliationStatus.MANUALLY_MATCHED, 0),
+            "accepted_unmatched": counts.get(ReconciliationStatus.ACCEPTED_UNMATCHED, 0),
         }
 
 
@@ -133,12 +133,15 @@ def _weigh_score(int_tx: Transaction, ext_tx: Transaction, rules: rules_mod.Rule
     except (TypeError, ValueError):
         return 0
 
+    # Time is a hard candidate filter (PRD 27 step 4), not just a bonus:
+    # candidates must be within the configured time tolerance.
     try:
         time_delta = abs((int_tx.transaction_time - ext_tx.transaction_time).total_seconds())
-        if time_delta <= rules.time_tolerance.total_seconds():
-            score += rules.score_time
+        if time_delta > rules.time_tolerance.total_seconds():
+            return 0
+        score += rules.score_time
     except (TypeError, ValueError):
-        pass
+        return 0
 
     try:
         if abs(int_tx.amount - ext_tx.amount) <= abs(rules.amount_tolerance):
@@ -241,11 +244,13 @@ class TransactionMatchEngine:
                     pool[:] = [tx for tx in pool if tx is not best.ext_tx]
 
         # --- Unmatched ---
+        # Manual-decision transactions still get a placeholder row so the
+        # manual override below can replace them with the resolved result.
         for tx in internal_active:
-            if _key(tx.source_transaction_id) not in used_int_keys and _key(tx.source_transaction_id) not in manual_internal_keys:
+            if _key(tx.source_transaction_id) not in used_int_keys:
                 results.append(self._make_unmatched(tx, ReconciliationStatus.UNMATCHED_INTERNAL))
         for ext_tx in external_active:
-            if _key(ext_tx.source_transaction_id) not in used_ext_keys and _key(ext_tx.source_transaction_id) not in manual_external_keys:
+            if _key(ext_tx.source_transaction_id) not in used_ext_keys:
                 results.append(self._make_unmatched(ext_tx, ReconciliationStatus.UNMATCHED_EXTERNAL))
 
         # --- Apply persisted manual resolutions (override auto results) ---
