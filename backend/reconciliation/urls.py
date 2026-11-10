@@ -6,6 +6,7 @@ urlpatterns = [
     # Files
     path("files", files.upload_file),
     path("files/list", files.list_files),
+    path("files/<int:file_id>", files.get_file),
     # Reconciliation runs
     path("reconciliation-runs", reconciliation.start_reconciliation),
     path("reconciliation-runs/list", reconciliation.list_runs),

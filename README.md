@@ -117,13 +117,22 @@ run and any unresolved transactions.
 
 ---
 
+## File details API
+
+`GET /api/files/<id>` returns one uploaded file with the same fields as an
+entry from `GET /api/files/list`: `id`, `filename`, `source`, `sha256`,
+`uploaded_at`, and `record_count`. A nonexistent ID returns HTTP 404 with
+`{"detail": "file not found"}`.
+
+---
+
 ## Running tests
 
 ```bash
 cd backend
 .venv/bin/pip install pytest pytest-django
 cd ..
-backend/.venv/bin/python -m pytest          # 50 tests
+backend/.venv/bin/python -m pytest
 ```
 
 Tests cover normalization, matching (exact ID, fuzzy, tolerances, cancelled
