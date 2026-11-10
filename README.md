@@ -96,7 +96,8 @@ npm run dev                         # http://localhost:5174
 ```
 
 Open <http://localhost:5174> — the dashboard shows summary counts for the last
-run and any unresolved transactions.
+run and any unresolved transactions. Before the first run, it instead prompts
+you to upload both files and start a reconciliation.
 
 > The Vite dev server proxies `/api` to Django on `127.0.0.1:8000`; no CORS
 > configuration is needed for local development.
@@ -138,6 +139,9 @@ backend/.venv/bin/python -m pytest
 Tests cover normalization, matching (exact ID, fuzzy, tolerances, cancelled
 exclusion), determinism, manual resolution overrides, and file import
 (dedup, correction versioning, error handling).
+
+Run the dashboard component tests with `npm --prefix frontend test` after
+installing the frontend dependencies.
 
 ---
 

@@ -6,7 +6,7 @@ const SOURCE_LABEL = { INTERNAL: 'Internal ledger', EXTERNAL: 'External statemen
 
 export default function Dashboard({ navigate, embeddedRunId }) {
   const [files, setFiles] = useState([])
-  const [runs, setRuns] = useState([])
+  const [runs, setRuns] = useState(null)
   const [latestRunId, setLatestRunId] = useState(null)
   const [unresolved, setUnresolved] = useState([])
   const [summary, setSummary] = useState(null)
@@ -77,7 +77,7 @@ export default function Dashboard({ navigate, embeddedRunId }) {
     }
   }
 
-  const latestRun = runs.find((r) => r.id === latestRunId) || runs[0]
+  const latestRun = runs?.find((r) => r.id === latestRunId) || runs?.[0]
   const summaryCounts = summary
     ? [
         { label: 'Matched', value: summary.matched, cls: 'ok' },
@@ -177,7 +177,14 @@ export default function Dashboard({ navigate, embeddedRunId }) {
         </div>
       )}
 
+      {runs && runs.length === 0 && (
+        <div className="panel">
+          <p className="muted">No reconciliation runs yet — upload both files and start one.</p>
+        </div>
+      )}
+
       {/* Unresolved transactions */}
+      {runs?.length > 0 && (
       <div className="panel">
         <h2>Unresolved transactions</h2>
         {unresolved.length === 0 ? (
@@ -215,6 +222,7 @@ export default function Dashboard({ navigate, embeddedRunId }) {
           </table>
         )}
       </div>
+      )}
 
       {/* Full results of latest run */}
       {latestRun && <LatestRunResults key={latestRun.id} run={latestRun} navigate={navigate} />}
