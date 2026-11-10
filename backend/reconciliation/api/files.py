@@ -1,4 +1,4 @@
-"""API endpoints for file upload (PRD 25.1)."""
+"""API endpoints for uploaded files (PRD 25.1)."""
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -53,3 +53,11 @@ def upload_file(request):
 def list_files(request):
     files = File.objects.order_by("-uploaded_at")
     return Response(FileSerializer(files, many=True).data)
+
+
+@api_view(["GET"])
+def get_file(request, file_id):
+    file = File.objects.filter(pk=file_id).first()
+    if file is None:
+        return Response({"detail": "file not found"}, status=status.HTTP_404_NOT_FOUND)
+    return Response(FileSerializer(file).data)
