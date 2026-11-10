@@ -43,11 +43,14 @@ def list_runs(request):
     return Response(ReconciliationRunSerializer(runs, many=True).data)
 
 
-@api_view(["GET"])
+@api_view(["GET", "DELETE"])
 def get_run(request, run_id):
     run = ReconciliationRun.objects.filter(pk=run_id).first()
     if run is None:
         return Response({"detail": "run not found"}, status=status.HTTP_404_NOT_FOUND)
+    if request.method == "DELETE":
+        run.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
     return Response(ReconciliationRunSerializer(run).data)
 
 

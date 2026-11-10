@@ -126,6 +126,15 @@ entry from `GET /api/files/list`: `id`, `filename`, `source`, `sha256`,
 
 ---
 
+## Reconciliation runs API
+
+`DELETE /api/reconciliation-runs/<id>` deletes a run and its results (including
+field differences), returning HTTP 204 with no body. Files, transactions, and
+manual resolutions are retained. A nonexistent ID returns HTTP 404 with
+`{"detail": "run not found"}`.
+
+---
+
 ## Running tests
 
 ```bash
