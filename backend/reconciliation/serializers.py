@@ -42,6 +42,10 @@ class TransactionVersionSerializer(serializers.ModelSerializer):
         fields = ["id", "version", "quantity", "price", "amount", "transaction_time", "status", "created_at"]
 
 
+class StartReconciliationSerializer(serializers.Serializer):
+    label = serializers.CharField(max_length=100, required=False, allow_blank=True, trim_whitespace=False)
+
+
 class ReconciliationRunSerializer(serializers.ModelSerializer):
     internal_file = FileSerializer(read_only=True)
     external_file = FileSerializer(read_only=True)
@@ -50,6 +54,7 @@ class ReconciliationRunSerializer(serializers.ModelSerializer):
         model = ReconciliationRun
         fields = [
             "id",
+            "label",
             "started_at",
             "completed_at",
             "status",

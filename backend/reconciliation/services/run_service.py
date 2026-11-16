@@ -57,7 +57,7 @@ def _engine_to_summary(summary: dict) -> dict:
     }
 
 
-def create_run(*, internal_file_id, external_file_id, rules: Rules = None) -> ReconciliationRun:
+def create_run(*, internal_file_id, external_file_id, rules: Rules = None, label: str = "") -> ReconciliationRun:
     """Create and execute a reconciliation run for two imported files."""
     from ..models import File
 
@@ -71,6 +71,7 @@ def create_run(*, internal_file_id, external_file_id, rules: Rules = None) -> Re
 
     run = ReconciliationRun.objects.create(
         status=ReconciliationRun.Status.RUNNING,
+        label=label,
         internal_file=int_file,
         external_file=ext_file,
         rules=rules.describe(),

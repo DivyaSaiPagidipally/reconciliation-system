@@ -12,6 +12,7 @@ from ..serializers import (
     ReconciliationResultDetailSerializer,
     ReconciliationResultSerializer,
     ReconciliationRunSerializer,
+    StartReconciliationSerializer,
 )
 from ..services.resolution_service import ResolutionError, accept_unmatched, match_transactions
 from ..services.run_service import RunServiceError, create_run
@@ -21,7 +22,7 @@ from ..services.run_service import RunServiceError, create_run
 def start_reconciliation(request):
     """Start a reconciliation run.
 
-    Request body: ``{"internal_file_id": <id>, "external_file_id": <id>}``.
+    Request body: ``{"internal_file_id": <id>, "external_file_id": <id>, "label": "..."}``.
     """
     int_id = request.data.get("internal_file_id")
     ext_id = request.data.get("external_file_id")
@@ -30,8 +31,13 @@ def start_reconciliation(request):
             {"detail": "internal_file_id and external_file_id are required"},
             status=status.HTTP_400_BAD_REQUEST,
         )
+    serializer = StartReconciliationSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
     try:
-        run = create_run(internal_file_id=int_id, external_file_id=ext_id)
+        run = create_run(
+            internal_file_id=int_id, external_file_id=ext_id,
+            label=serializer.validated_data.get("label", ""),
+        )
     except RunServiceError as exc:
         return Response({"detail": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
     return Response(ReconciliationRunSerializer(run).data, status=status.HTTP_201_CREATED)

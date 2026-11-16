@@ -112,6 +112,7 @@ class ReconciliationRun(models.Model):
         COMPLETED = "COMPLETED", "Completed"
         FAILED = "FAILED", "Failed"
 
+    label = models.CharField(max_length=100, blank=True, default="")
     started_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=16, choices=Status.choices, default=Status.RUNNING)
