@@ -117,6 +117,18 @@ run and any unresolved transactions.
 
 ---
 
+## Reconciliation runs API
+
+`POST /api/reconciliation-runs` starts a run with `internal_file_id` and
+`external_file_id`. An optional `label` string (at most 100 characters),
+for example `"March month-end"`, identifies the run. Omit it or send an
+empty string for an unlabeled run; invalid or overlong labels return HTTP 400.
+The response, `GET /api/reconciliation-runs/list`, and
+`GET /api/reconciliation-runs/<id>` include `label`. Existing runs receive an
+empty label when the Django migration is applied.
+
+---
+
 ## File details API
 
 `GET /api/files/<id>` returns one uploaded file with the same fields as an
@@ -137,7 +149,8 @@ backend/.venv/bin/python -m pytest
 
 Tests cover normalization, matching (exact ID, fuzzy, tolerances, cancelled
 exclusion), determinism, manual resolution overrides, and file import
-(dedup, correction versioning, error handling).
+(dedup, correction versioning, error handling), as well as run labels and
+their migration on PostgreSQL.
 
 ---
 
