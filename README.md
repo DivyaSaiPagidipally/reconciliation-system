@@ -117,6 +117,22 @@ run and any unresolved transactions.
 
 ---
 
+## Reconciliation runs API
+
+`POST /api/reconciliation-runs` accepts `internal_file_id`, `external_file_id`,
+and an optional `label` string (up to 100 characters), for example:
+
+```json
+{"internal_file_id": 1, "external_file_id": 2, "label": "March month-end"}
+```
+
+Omitting the label stores an empty string; labels longer than 100 characters
+are rejected with HTTP 400. The created run, `GET /api/reconciliation-runs/list`,
+and `GET /api/reconciliation-runs/<id>` include `label`. Existing runs receive
+an empty label when the migration is applied.
+
+---
+
 ## File details API
 
 `GET /api/files/<id>` returns one uploaded file with the same fields as an
@@ -136,8 +152,10 @@ backend/.venv/bin/python -m pytest
 ```
 
 Tests cover normalization, matching (exact ID, fuzzy, tolerances, cancelled
-exclusion), determinism, manual resolution overrides, and file import
-(dedup, correction versioning, error handling).
+exclusion), determinism, manual resolution overrides, file import
+(dedup, correction versioning, error handling), and run labels including
+migration of existing runs. The backend tests require PostgreSQL and a database
+user allowed to create a test database.
 
 ---
 
