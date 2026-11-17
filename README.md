@@ -151,6 +151,8 @@ exclusion), determinism, manual resolution overrides, and file import
   instrument (+30), side (+20), quantity (+20), time (+20) and amount (+10),
   with a minimum score of 60. **Time tolerance is a hard candidate filter** —
   two records more than 5 minutes apart cannot fuzzy-match.
+- **Transaction instrument filtering** uses a database index on `instrument`,
+  installed by the Django migrations.
 - **Duplicate files** are detected by SHA-256 of the file contents, scoped per
   source (`INTERNAL`/`EXTERNAL`). Re-uploading the same file returns HTTP 409
   with "File already imported" and creates no records (PRD §17).

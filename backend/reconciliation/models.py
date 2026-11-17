@@ -62,6 +62,7 @@ class Transaction(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=["source", "source_transaction_id"]),
+            models.Index(fields=["instrument"]),
         ]
         constraints = [
             models.UniqueConstraint(
