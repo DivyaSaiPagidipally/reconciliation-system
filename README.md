@@ -95,6 +95,9 @@ npm install
 npm run dev                         # http://localhost:5174
 ```
 
+The migrations include an index on reconciliation run start times to support
+newest-first listings. Apply migrations when upgrading an existing database.
+
 Open <http://localhost:5174> — the dashboard shows summary counts for the last
 run and any unresolved transactions.
 
