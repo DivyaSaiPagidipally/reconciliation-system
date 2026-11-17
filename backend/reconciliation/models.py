@@ -124,6 +124,11 @@ class ReconciliationRun(models.Model):
     summary = models.JSONField(default=dict, blank=True)
     rules = models.JSONField(default=dict, blank=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=["started_at"]),
+        ]
+
     def __str__(self) -> str:
         return f"Run #{self.id} ({self.status})"
 
